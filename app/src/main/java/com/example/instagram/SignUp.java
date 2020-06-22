@@ -1,12 +1,15 @@
 package com.example.instagram;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -16,6 +19,7 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+import com.parse.SignUpCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 
@@ -31,7 +35,7 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
         setTitle("Sign Up");
 
-        ParseInstallation.getCurrentInstallation().saveInBackground();
+       ParseInstallation.getCurrentInstallation().saveInBackground();
 
         edtSignUpEmail=findViewById(R.id.edtSignUpEmail);
         edtSignUpUsername=findViewById(R.id.edtSignUpUsername);
@@ -42,10 +46,20 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
         btnSignUp.setOnClickListener(SignUp.this);
         btnLogIn.setOnClickListener(SignUp.this);
 
-//        if(ParseUser.getCurrentUser()!=null){
-//            ParseUser.getCurrentUser().logOut();
-//        }
+        if(ParseUser.getCurrentUser()!=null){
+            ParseUser.getCurrentUser().logOut();
+        }
 
+        edtSignUpPassword.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View view, int keyCode, KeyEvent event) {
+                if(keyCode==KeyEvent.KEYCODE_ENTER &&
+                event.getAction()==KeyEvent.ACTION_DOWN){
+                    onClick(btnSignUp);
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -54,23 +68,33 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
         switch (buttonView.getId()){
 
             case R.id.btnSignUp:
-                final ParseUser parseUser=new ParseUser();
-                parseUser.setUsername(edtSignUpUsername.getText().toString());
-                parseUser.setEmail(edtSignUpEmail.getText().toString());
-                parseUser.setPassword(edtSignUpPassword.getText().toString());
+                if(edtSignUpUsername.getText().toString().equals("")||
+                        edtSignUpEmail.getText().toString().equals("")||
+                edtSignUpPassword.getText().toString().equals("")){
+                    FancyToast.makeText(this, "Please fill all details",
+                            Toast.LENGTH_SHORT,FancyToast.WARNING,false).show();
+                }else {
 
-                parseUser.saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if(e==null){
-                            FancyToast.makeText(SignUp.this, parseUser.getUsername()+" is Signed up",
-                                    Toast.LENGTH_SHORT,FancyToast.SUCCESS,false).show();
-                        }else{
-                            FancyToast.makeText(SignUp.this,"There is an error: "+ e.getMessage(),
-                                    Toast.LENGTH_SHORT,FancyToast.ERROR,false).show();
+                    final ParseUser appUser = new ParseUser();
+                    appUser.setEmail(edtSignUpEmail.getText().toString());
+                    appUser.setUsername(edtSignUpUsername.getText().toString());
+                    appUser.setPassword(edtSignUpPassword.getText().toString());
+                    appUser.signUpInBackground(new SignUpCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                FancyToast.makeText(SignUp.this, appUser.get("username") + " is Signed Up Successfully",
+                                        FancyToast.LENGTH_LONG, FancyToast.SUCCESS, false).show();
+
+                            } else {
+                                FancyToast.makeText(SignUp.this, e.getMessage(),
+                                        FancyToast.LENGTH_LONG, FancyToast.ERROR, false).show();
+
+                            }
+
                         }
-                    }
-                });
+                    });
+                }
                 break;
 
             case R.id.btnLogIn:
@@ -84,4 +108,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
 
     }
+
+    public void rootLayoutTapped(View view) {
+         try {
+             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+         }catch (Exception e){
+             e.printStackTrace();
+         }
+         }
 }
