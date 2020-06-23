@@ -2,6 +2,7 @@ package com.example.instagram;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,7 +37,8 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         btnSignUpLogInActivity.setOnClickListener(LogInActivity.this);
 
         if(ParseUser.getCurrentUser()!=null){
-            ParseUser.getCurrentUser().logOut();
+           // ParseUser.getCurrentUser().logOut();
+         transitionToSocialMediaActivity();
         }
 
         edtLogInPassword.setOnKeyListener(new View.OnKeyListener() {
@@ -66,6 +68,7 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
                                     if (user != null && e == null) {
                                         FancyToast.makeText(LogInActivity.this, "Login Successfull",
                                                 Toast.LENGTH_SHORT, FancyToast.SUCCESS, false).show();
+                                     transitionToSocialMediaActivity();
                                     } else {
                                         FancyToast.makeText(LogInActivity.this, "Email and password is required",
                                                 Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
@@ -90,5 +93,10 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    private void transitionToSocialMediaActivity(){
+        Intent intent=new Intent(LogInActivity.this,SocialMediaActivity.class);
+        startActivity(intent);
     }
 }
