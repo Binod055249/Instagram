@@ -81,9 +81,13 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                     appUser.setUsername(edtSignUpUsername.getText().toString());
                     appUser.setPassword(edtSignUpPassword.getText().toString());
 
-                    final DelayedProgressDialog progressDialog = new DelayedProgressDialog();
-                    progressDialog.show(getSupportFragmentManager(), "Signing up"
-                            +edtSignUpUsername.getText().toString());
+//                    final DelayedProgressDialog progressDialog = new DelayedProgressDialog();
+//                    progressDialog.show(getSupportFragmentManager(), "Signing up");
+
+                    final ProgressDialog progressDialog =new ProgressDialog(this);
+                    progressDialog.setMessage("signing up "+edtSignUpUsername.getText().toString());
+                    progressDialog.show();
+
 
                     appUser.signUpInBackground(new SignUpCallback() {
                         @Override
@@ -98,7 +102,8 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener {
                                         FancyToast.LENGTH_LONG, FancyToast.ERROR, false).show();
 
                             }
-                            progressDialog.cancel();
+                            //progressDialog.cancel();
+                            progressDialog.dismiss();
                         }
                     });
                 }
