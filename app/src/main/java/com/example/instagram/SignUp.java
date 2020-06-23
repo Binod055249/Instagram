@@ -23,10 +23,10 @@ import com.parse.SignUpCallback;
 import com.shashank.sony.fancytoastlib.FancyToast;
 
 
-public class SignUp extends AppCompatActivity implements View.OnClickListener{
+public class SignUp extends AppCompatActivity implements View.OnClickListener {
 
-    private EditText edtSignUpEmail,edtSignUpUsername,edtSignUpPassword;
-    private Button btnSignUp,btnLogIn;
+    private EditText edtSignUpEmail, edtSignUpUsername, edtSignUpPassword;
+    private Button btnSignUp, btnLogIn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,27 +35,27 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
 
         setTitle("Sign Up");
 
-       ParseInstallation.getCurrentInstallation().saveInBackground();
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 
-        edtSignUpEmail=findViewById(R.id.edtSignUpEmail);
-        edtSignUpUsername=findViewById(R.id.edtSignUpUsername);
-        edtSignUpPassword=findViewById(R.id.edtSignUpPassword);
-        btnSignUp=findViewById(R.id.btnSignUp);
-        btnLogIn=findViewById(R.id.btnLogIn);
+        edtSignUpEmail = findViewById(R.id.edtSignUpEmail);
+        edtSignUpUsername = findViewById(R.id.edtSignUpUsername);
+        edtSignUpPassword = findViewById(R.id.edtSignUpPassword);
+        btnSignUp = findViewById(R.id.btnSignUp);
+        btnLogIn = findViewById(R.id.btnLogIn);
 
         btnSignUp.setOnClickListener(SignUp.this);
         btnLogIn.setOnClickListener(SignUp.this);
 
-        if(ParseUser.getCurrentUser()!=null){
-          //  ParseUser.getCurrentUser().logOut();
-         transitionToSocialMediaActivity();
+        if (ParseUser.getCurrentUser() != null) {
+            //  ParseUser.getCurrentUser().logOut();
+            transitionToSocialMediaActivity();
         }
 
         edtSignUpPassword.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if(keyCode==KeyEvent.KEYCODE_ENTER &&
-                event.getAction()==KeyEvent.ACTION_DOWN){
+                if (keyCode == KeyEvent.KEYCODE_ENTER &&
+                        event.getAction() == KeyEvent.ACTION_DOWN) {
                     onClick(btnSignUp);
                 }
                 return false;
@@ -66,20 +66,25 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
     @Override
     public void onClick(View buttonView) {
 
-        switch (buttonView.getId()){
+        switch (buttonView.getId()) {
 
             case R.id.btnSignUp:
-                if(edtSignUpUsername.getText().toString().equals("")||
-                        edtSignUpEmail.getText().toString().equals("")||
-                edtSignUpPassword.getText().toString().equals("")){
+                if (edtSignUpUsername.getText().toString().equals("") ||
+                        edtSignUpEmail.getText().toString().equals("") ||
+                        edtSignUpPassword.getText().toString().equals("")) {
                     FancyToast.makeText(this, "Please fill all details",
-                            Toast.LENGTH_SHORT,FancyToast.WARNING,false).show();
-                }else {
+                            Toast.LENGTH_SHORT, FancyToast.WARNING, false).show();
+                } else {
 
                     final ParseUser appUser = new ParseUser();
                     appUser.setEmail(edtSignUpEmail.getText().toString());
                     appUser.setUsername(edtSignUpUsername.getText().toString());
                     appUser.setPassword(edtSignUpPassword.getText().toString());
+
+                    final DelayedProgressDialog progressDialog = new DelayedProgressDialog();
+                    progressDialog.show(getSupportFragmentManager(), "Signing up"
+                            +edtSignUpUsername.getText().toString());
+
                     appUser.signUpInBackground(new SignUpCallback() {
                         @Override
                         public void done(ParseException e) {
@@ -93,34 +98,32 @@ public class SignUp extends AppCompatActivity implements View.OnClickListener{
                                         FancyToast.LENGTH_LONG, FancyToast.ERROR, false).show();
 
                             }
-
+                            progressDialog.cancel();
                         }
                     });
                 }
                 break;
 
             case R.id.btnLogIn:
-                Intent intent =new Intent(SignUp.this,LogInActivity.class);
+                Intent intent = new Intent(SignUp.this, LogInActivity.class);
                 startActivity(intent);
                 break;
 
         }
 
 
-
-
     }
 
     public void rootLayoutTapped(View view) {
-         try {
-             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-         }catch (Exception e){
-             e.printStackTrace();
-         }
-         }
-         private void transitionToSocialMediaActivity(){
-        Intent intent=new Intent(SignUp.this,SocialMediaActivity.class);
+        try {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void transitionToSocialMediaActivity() {
+        Intent intent = new Intent(SignUp.this, SocialMediaActivity.class);
         startActivity(intent);
-         }
+    }
 }
