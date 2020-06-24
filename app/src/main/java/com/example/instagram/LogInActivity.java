@@ -1,7 +1,5 @@
 package com.example.instagram;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -10,6 +8,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -56,19 +56,17 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View buttonView) {
-
         switch (buttonView.getId()){
-
             case R.id.btnLogInActivity:
                 ParseUser.logInInBackground(edtLogInEmail.getText().toString(),
                             edtLogInPassword.getText().toString(),
-                            new LogInCallback() {
+                             new LogInCallback(){
                                 @Override
                                 public void done(ParseUser user, ParseException e) {
                                     if (user != null && e == null) {
                                         FancyToast.makeText(LogInActivity.this, "Login Successfull",
                                                 Toast.LENGTH_SHORT, FancyToast.SUCCESS, false).show();
-                                     transitionToSocialMediaActivity();
+                                        transitionToSocialMediaActivity();
                                     } else {
                                         FancyToast.makeText(LogInActivity.this, "Email and password is required",
                                                 Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
