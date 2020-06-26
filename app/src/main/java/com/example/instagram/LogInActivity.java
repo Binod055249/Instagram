@@ -78,7 +78,8 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
             case R.id.btnSignUpLogInActivity:
                 ParseUser.logOut();
-                finish();
+               Intent intent=new Intent(LogInActivity.this,SignUp.class);
+               startActivity(intent);
                 break;
 
         }
@@ -96,5 +97,6 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
     private void transitionToSocialMediaActivity(){
         Intent intent=new Intent(LogInActivity.this,SocialMediaActivity.class);
         startActivity(intent);
+        finish();
     }
 }

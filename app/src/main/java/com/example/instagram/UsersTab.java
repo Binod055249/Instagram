@@ -96,7 +96,7 @@ public class UsersTab extends Fragment {
                             arrayList.add(user.getUsername());
                         }
                         listView.setAdapter(arrayAdapter);
-                          txtLoadingUsers.animate().alpha(0f).setDuration(2000);
+                          txtLoadingUsers.animate().alpha(0f).setDuration(1000);
                         listView.setVisibility(View.VISIBLE);
                     }
                     progressDialog.dismiss();
