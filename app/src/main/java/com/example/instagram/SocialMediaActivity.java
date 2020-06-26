@@ -2,20 +2,23 @@ package com.example.instagram;
 
 import android.Manifest;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.material.tabs.TabLayout;
@@ -30,25 +33,30 @@ import java.io.ByteArrayOutputStream;
 
 public class SocialMediaActivity extends AppCompatActivity {
 
-    private Toolbar toolbar;
+    private androidx.appcompat.widget.Toolbar toolbar;
     private ViewPager viewPager;
     private TabLayout tabLayout;
     private TabAdapter tabAdapter;
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_social_media);
 
+        setTitle("Social Media App");
+        toolbar=findViewById(R.id.myToolbar);
         setTitle("Social Media App!!!");
+
 
         toolbar = findViewById(R.id.myToolbar);
         setSupportActionBar(toolbar);
 
+        viewPager=findViewById(R.id.viewPager);
+        tabAdapter=new TabAdapter(getSupportFragmentManager());
         viewPager = findViewById(R.id.viewPager);
         tabAdapter = new TabAdapter(getSupportFragmentManager());
         viewPager.setAdapter(tabAdapter);
 
+        tabLayout=findViewById(R.id.tabLayout);
+        tabLayout.setupWithViewPager(viewPager,true);
         tabLayout = findViewById(R.id.tabLayout);
         tabLayout.setupWithViewPager(viewPager, false);
 
@@ -134,25 +142,41 @@ public class SocialMediaActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                 byte[] bytes = byteArrayOutputStream.toByteArray();
 
-                ParseFile parseFile = new ParseFile("img.png", bytes);
-                ParseObject parseObject = new ParseObject("Photo");
-                parseObject.put("picture", parseFile);
-                parseObject.put("username", ParseUser.getCurrentUser().getUsername());
-                final ProgressDialog dialog = new ProgressDialog(this);
-                dialog.setMessage("Loading...");
-                dialog.show();
-                parseObject.saveInBackground(new SaveCallback() {
+                final ParseFile parseFile = new ParseFile("img.png", bytes);
+                final ParseObject parseObject = new ParseObject("Photo");
+                AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
+                final EditText edtDesc=new EditText(this);
+                edtDesc.setInputType(InputType.TYPE_CLASS_TEXT);
+                alertDialog.setTitle("enter a description of the image");
+                alertDialog.setView(edtDesc);
+                alertDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            FancyToast.makeText(SocialMediaActivity.this, "Pictured Uploaded!", Toast.LENGTH_SHORT, FancyToast.INFO, false).show();
-                        } else {
-                            FancyToast.makeText(SocialMediaActivity.this, "Unknown error: " + e.getMessage(), Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
+                    public void onClick(DialogInterface dialog, int which) {
 
-                        }
-                        dialog.dismiss();
+                        parseObject.put("picture", parseFile);
+                        parseObject.put("username", ParseUser.getCurrentUser().getUsername());
+                        parseObject.put("image_desc",edtDesc.getText().toString());
+                        final ProgressDialog progressDialog = new ProgressDialog(SocialMediaActivity.this);
+                        progressDialog.setMessage("Loading...");
+                        progressDialog.show();
+                        parseObject.saveInBackground(new SaveCallback() {
+                            @Override
+                            public void done(ParseException e) {
+                                if (e == null) {
+                                    FancyToast.makeText(SocialMediaActivity.this, "Pictured Uploaded!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, false).show();
+                                } else {
+                                    FancyToast.makeText(SocialMediaActivity.this, "Unknown error: " + e.getMessage(), Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
+
+                                }
+                                progressDialog.dismiss();
+                            }
+                        });
+
+
                     }
                 });
+                alertDialog.show();
+                alertDialog.setCancelable(false);
 
 
             } catch (Exception e) {

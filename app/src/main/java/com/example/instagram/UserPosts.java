@@ -58,7 +58,7 @@ public class UserPosts extends AppCompatActivity {
                     for (ParseObject post : objects) {
 
                         final TextView postDescription = new TextView(UserPosts.this);
-                        postDescription.setText(post.get("image_des") + "");
+                        postDescription.setText(post.get("image_desc") + "");
                         ParseFile postPicture = (ParseFile) post.get("picture");
                         postPicture.getDataInBackground(new GetDataCallback() {
                             @Override
@@ -71,16 +71,16 @@ public class UserPosts extends AppCompatActivity {
                                     LinearLayout.LayoutParams imageView_params =
                                             new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                                    imageView_params.setMargins(5, 5, 5, 5);
+                                    imageView_params.setMargins(5, 5, 5, 0);
                                     postImageView.setLayoutParams(imageView_params);
                                     postImageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
                                     postImageView.setImageBitmap(bitmap);
 
                                     LinearLayout.LayoutParams des_params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                                    des_params.setMargins(5, 5, 5, 15);
+                                    des_params.setMargins(5, 5, 5, 5);
                                     postDescription.setLayoutParams(des_params);
                                     postDescription.setGravity(Gravity.CENTER);
-                                    postDescription.setBackgroundColor(Color.RED);
+                                    postDescription.setBackgroundColor(Color.BLUE);
                                     postDescription.setTextColor(Color.WHITE);
                                     postDescription.setTextSize(30f);
 
