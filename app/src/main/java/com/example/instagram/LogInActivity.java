@@ -2,9 +2,7 @@ package com.example.instagram;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -18,8 +16,8 @@ import com.shashank.sony.fancytoastlib.FancyToast;
 
 public class LogInActivity extends AppCompatActivity implements View.OnClickListener{
 
-    private EditText edtLogInEmail,edtLogInPassword;
-    private Button btnLogInActivity,btnSignUpLogInActivity;
+    private EditText edtLoginEmail, edtLoginPassword;
+    private Button btnLoginActivity, btnSignUpLoginActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,75 +26,62 @@ public class LogInActivity extends AppCompatActivity implements View.OnClickList
 
         setTitle("Log In");
 
-        edtLogInEmail=findViewById(R.id.edtLogInEmail);
-        edtLogInPassword=findViewById(R.id.edtLogInPassword);
-        btnLogInActivity=findViewById(R.id.btnLogInActivity);
-        btnSignUpLogInActivity=findViewById(R.id.btnSignUpLogInActivity);
+        edtLoginEmail = findViewById(R.id.edtLogInEmail);
+        edtLoginPassword = findViewById(R.id.edtLogInPassword);
+        btnLoginActivity = findViewById(R.id.btnLogInActivity);
+        btnSignUpLoginActivity = findViewById(R.id.btnSignUpLogInActivity);
 
-        btnLogInActivity.setOnClickListener(LogInActivity.this);
-        btnSignUpLogInActivity.setOnClickListener(LogInActivity.this);
+        btnLoginActivity.setOnClickListener(this);
+        btnSignUpLoginActivity.setOnClickListener(this);
 
-        if(ParseUser.getCurrentUser()!=null){
-           // ParseUser.getCurrentUser().logOut();
-         transitionToSocialMediaActivity();
+        if (ParseUser.getCurrentUser() != null) {
+
+            ParseUser.getCurrentUser().logOut();
         }
-
-        edtLogInPassword.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View view, int keyCode, KeyEvent event) {
-                if(keyCode==KeyEvent.KEYCODE_ENTER &&
-                        event.getAction()==KeyEvent.ACTION_DOWN){
-                    onClick(btnLogInActivity);
-                }
-                return false;
-            }
-        });
 
     }
 
     @Override
-    public void onClick(View buttonView) {
-        switch (buttonView.getId()){
+    public void onClick(View view) {
+
+        switch (view.getId()) {
+
             case R.id.btnLogInActivity:
-                ParseUser.logInInBackground(edtLogInEmail.getText().toString(),
-                            edtLogInPassword.getText().toString(),
-                             new LogInCallback(){
-                                @Override
-                                public void done(ParseUser user, ParseException e) {
-                                    if (user != null && e == null) {
-                                        FancyToast.makeText(LogInActivity.this, "Login Successfull",
-                                                Toast.LENGTH_SHORT, FancyToast.SUCCESS, false).show();
-                                        transitionToSocialMediaActivity();
-                                    } else {
-                                        FancyToast.makeText(LogInActivity.this, "Email and password is required",
-                                                Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
+                ParseUser.logInInBackground(edtLoginEmail.getText().toString(),
+                        edtLoginPassword.getText().toString(),
+                        new LogInCallback() {
+                            @Override
+                            public void done(ParseUser user, ParseException e) {
 
-                                    }
+                                if (user != null && e == null) {
+
+                                    FancyToast.makeText(LogInActivity.this,
+                                            user.getUsername() + " is Logged in successfully",
+                                            Toast.LENGTH_SHORT, FancyToast.SUCCESS,
+                                            false).show();
+                                    transitionToSocialMediaActivity();
                                 }
-                            });
-                    break;
+                            }
+                        });
 
-            case R.id.btnSignUpLogInActivity:
-                ParseUser.logOut();
-               Intent intent=new Intent(LogInActivity.this,SignUp.class);
-               startActivity(intent);
                 break;
 
-        }
+            case R.id.btnSignUpLogInActivity:
+                Intent intent = new Intent(LogInActivity.this, SignUp.class);
+                startActivity(intent);
+                break;
 
-    }
-    public void rootLayoutTapped(View view) {
-        try {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }catch (Exception e){
-            e.printStackTrace();
+
         }
     }
 
-    private void transitionToSocialMediaActivity(){
-        Intent intent=new Intent(LogInActivity.this,SocialMediaActivity.class);
+
+    private void transitionToSocialMediaActivity() {
+
+        Intent intent = new Intent(LogInActivity.this, SocialMediaActivity.class);
         startActivity(intent);
         finish();
     }
+
+
 }

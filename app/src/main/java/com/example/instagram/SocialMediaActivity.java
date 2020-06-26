@@ -1,19 +1,15 @@
 package com.example.instagram;
 
 import android.Manifest;
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,7 +41,6 @@ public class SocialMediaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_social_media);
 
         setTitle("Social Media App!!!");
-
 
         toolbar = findViewById(R.id.myToolbar);
         setSupportActionBar(toolbar);
@@ -139,41 +134,25 @@ public class SocialMediaActivity extends AppCompatActivity {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
                 byte[] bytes = byteArrayOutputStream.toByteArray();
 
-                final ParseFile parseFile = new ParseFile("img.png", bytes);
-                final ParseObject parseObject = new ParseObject("Photo");
-                AlertDialog.Builder alertDialog=new AlertDialog.Builder(this);
-                final EditText edtDesc=new EditText(this);
-                edtDesc.setInputType(InputType.TYPE_CLASS_TEXT);
-                alertDialog.setTitle("enter a description of the image");
-                alertDialog.setView(edtDesc);
-                alertDialog.setPositiveButton("ok", new DialogInterface.OnClickListener() {
+                ParseFile parseFile = new ParseFile("img.png", bytes);
+                ParseObject parseObject = new ParseObject("Photo");
+                parseObject.put("picture", parseFile);
+                parseObject.put("username", ParseUser.getCurrentUser().getUsername());
+                final ProgressDialog dialog = new ProgressDialog(this);
+                dialog.setMessage("Loading...");
+                dialog.show();
+                parseObject.saveInBackground(new SaveCallback() {
                     @Override
-                    public void onClick(DialogInterface dialog, int which) {
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            FancyToast.makeText(SocialMediaActivity.this, "Pictured Uploaded!", Toast.LENGTH_SHORT, FancyToast.INFO, false).show();
+                        } else {
+                            FancyToast.makeText(SocialMediaActivity.this, "Unknown error: " + e.getMessage(), Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
 
-                        parseObject.put("picture", parseFile);
-                        parseObject.put("username", ParseUser.getCurrentUser().getUsername());
-                        parseObject.put("image_desc",edtDesc.getText().toString());
-                        final ProgressDialog progressDialog = new ProgressDialog(SocialMediaActivity.this);
-                        progressDialog.setMessage("Loading...");
-                        progressDialog.show();
-                        parseObject.saveInBackground(new SaveCallback() {
-                            @Override
-                            public void done(ParseException e) {
-                                if (e == null) {
-                                    FancyToast.makeText(SocialMediaActivity.this, "Pictured Uploaded!", Toast.LENGTH_SHORT, FancyToast.SUCCESS, false).show();
-                                } else {
-                                    FancyToast.makeText(SocialMediaActivity.this, "Unknown error: " + e.getMessage(), Toast.LENGTH_SHORT, FancyToast.ERROR, false).show();
-
-                                }
-                                progressDialog.dismiss();
-                            }
-                        });
-
-
+                        }
+                        dialog.dismiss();
                     }
                 });
-                alertDialog.show();
-                alertDialog.setCancelable(false);
 
 
             } catch (Exception e) {
